@@ -62,8 +62,8 @@ php spark serve
 http://localhost:8080
 ```  
 
-📁 Struktur Direktori Penting
-    ```
+📁 Struktur Direktori Penting  
+```
         app/Controllers – Logic utama aplikasi
 
         app/Views – Tampilan berbasis Bootstrap
@@ -72,8 +72,8 @@ http://localhost:8080
 
         public/ – Akses utama website (entry point)
 
-        app/Database/Seeds – Seeder untuk data awal (jika tersedia)
-    ```  
+        app/Database/Seeds – Seeder untuk data awal (jika tersedia)  
+```  
 
 🙌 Kontribusi
 
