@@ -83,4 +83,4 @@ Pull request dan issue sangat diterima! Pastikan kamu mengikuti gaya penulisan d
 
 Proyek ini didistribusikan untuk kebutuhan internal pengembangan Universitas UMAHA. Kontak pemilik repository untuk penggunaan lebih lanjut.
 
-🧑‍💻 Developed by:  [Puji Ermanto | AKA Tatang. S | AKA Mama Salajami | AKA Deden Inyuus](https://pujiermanto-portfolio.vercel.app)
+🧑‍💻 Developed by:  [Puji Ermanto | AKA Tatang. S | AKA Maman Salajami | AKA Deden Inyuus](https://pujiermanto-portfolio.vercel.app)
