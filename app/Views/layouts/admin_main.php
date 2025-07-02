@@ -111,6 +111,8 @@
             Tracer UMAHA
         </div>
         <a href="<?= base_url('admin/dashboard') ?>" class="<?= uri_string() == 'admin/dashboard' ? 'active' : '' ?>"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+        <a href="<?= base_url('admin/landing') ?>" class="<?= uri_string() == 'admin/periode' ? 'active' : '' ?>"><i class="bi bi-sliders"></i> Setting Page</a>
+        <a href="<?= base_url('admin/kuesionerfields') ?>" class="<?= uri_string() == 'admin/periode' ? 'active' : '' ?>"><i class="bi bi-gear"></i> Setting Form</a>
         <a href="<?= base_url('admin/alumni') ?>" class="<?= uri_string() == 'admin/alumni' ? 'active' : '' ?>"><i class="bi bi-person-lines-fill me-2"></i>Data Alumni</a>
         <a href="<?= base_url('admin/pengguna') ?>" class="<?= uri_string() == 'admin/pengguna' ? 'active' : '' ?>"><i class="bi bi-person-workspace me-2"></i>Pengguna</a>
         <a href="<?= base_url('admin/periode') ?>" class="<?= uri_string() == 'admin/periode' ? 'active' : '' ?>"><i class="bi bi-calendar-range me-2"></i>Periode Tracer</a>

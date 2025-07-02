@@ -7,6 +7,7 @@ use CodeIgniter\Model;
 class TracerModel extends Model
 {
     protected $table = 'tracer_study';
+    // protected $useTimestamps = true;
     protected $allowedFields = [
         'alumni_id',
         'tahun_pengisian',

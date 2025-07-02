@@ -16,7 +16,6 @@ class Auth extends BaseController
     {
         helper('url');
         $cfg = config('Google');
-        echo $cfg->clientID;
 
         $this->oauth = new OAuth2([
             'clientId'           => $cfg->clientID,
@@ -28,41 +27,10 @@ class Auth extends BaseController
         ]);
     }
 
-    /** ────────── LOGIN MANUAL (tidak diubah) ────────── */
+    /** ────────── LOGIN MANUAL ────────── */
     public function login()
     {
-        $code = $this->request->getGet('code');
-        if (!$code) {
-            return redirect()->to('/')->with('error', 'Login dibatalkan');
-        }
-
-        $this->oauth->setCode($code);
-
-        try {
-            $token = $this->oauth->fetchAuthToken();
-        } catch (\Exception $e) {
-            return redirect()->to('/')->with('error', 'Gagal ambil token: ' . $e->getMessage());
-        }
-
-        $idToken = $token['id_token'] ?? null;
-        if (!$idToken) {
-            return redirect()->to('/')->with('error', 'Token ID tidak ditemukan');
-        }
-
-        // ✅ Ambil public key dari Google (pakai cara resmi)
-        $jwks = json_decode(file_get_contents('https://www.googleapis.com/oauth2/v3/certs'), true);
-        $keys = JWK::parseKeySet($jwks); // otomatis ambil dari "kid"
-
-        try {
-            $payload = JWT::decode($idToken, $keys); // JWT v6 sudah tidak butuh algo di param ke-3
-        } catch (\Exception $e) {
-            return redirect()->to('/')->with('error', 'Token tidak valid: ' . $e->getMessage());
-        }
-
-        $email = $payload->email ?? null;
-        if (!$email) {
-            return redirect()->to('/')->with('error', 'Email tidak ditemukan di ID token');
-        }
+        $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
         $alumniModel = new \App\Models\AlumniModel();

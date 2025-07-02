@@ -14,10 +14,14 @@
 
             <!-- Sosial Media Icons + Auth -->
             <div class="d-flex flex-wrap justify-content-center justify-content-md-end align-items-center gap-3 fs-5">
-                <a href="#" class="text-secondary"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="text-secondary"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-secondary"><i class="bi bi-twitter-x"></i></a>
-
+                <?php foreach ($social_links as $key => $value): ?>
+                    <?php if (!empty($value)): // skip kalau kosong 
+                    ?>
+                        <a href="<?= esc($value) ?>" target="_blank" class="text-decoration-none text-secondary" title="<?= ucfirst($key) ?>">
+                            <i class="bi bi-<?= esc($key) ?>"></i>
+                        </a>
+                    <?php endif; ?>
+                <?php endforeach ?>
                 <?php if (session()->get('logged_in')): ?>
                     <span class="text-success fw-semibold small"><?= session()->get('email') ?></span>
                     <a href="<?= base_url('alumni/dashboard') ?>" class="btn btn-outline-primary btn-sm">Dashboard</a>

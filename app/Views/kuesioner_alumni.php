@@ -5,171 +5,144 @@
 <div class="container mt-4 mb-5">
     <h3 class="mb-3">Form Kuesioner Tracer Study</h3>
 
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-    <?php endif ?>
-
     <form action="<?= base_url('kuesioner/alumni/simpan') ?>" method="post">
         <input type="hidden" name="tahun_pengisian" value="<?= date('Y') ?>">
 
-        <!-- Step 1 -->
+        <!-- Langsung taruh step-1 di sini tanpa include -->
         <div id="step-1" class="step">
-            <h5 class="mb-2">Biodata Alumni</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <label>NIM</label>
-                    <input type="text" class="form-control" name="nim" value="<?= esc($alumni['nim']) ?>" <?= $alumni['nim'] !== "" ? 'readonly' : '' ?>>
+            <?php
+            // Group fields_step1 berdasarkan header
+            $groups = [];
+            foreach ($fields_step1 as $field) {
+                $header = !empty($field['header']) ? $field['header'] : 'Default Header';
+                if (!isset($groups[$header])) {
+                    $groups[$header] = [];
+                }
+                $groups[$header][] = $field;
+            }
+            ?>
+
+            <?php foreach ($groups as $header => $fields): ?>
+                <h5 class="mb-2"><?= esc($header) ?></h5>
+                <div class="row mb-5">
+                    <?php foreach ($fields as $field): ?>
+                        <div class="col-md-6 mb-3">
+                            <label><?= esc($field['label']) ?> <?= $field['required'] ? '*' : '' ?></label>
+                            <?php
+                            $name = esc($field['field_name']);
+                            $required = $field['required'] ? 'required' : '';
+                            $options = json_decode($field['options'], true);
+                            switch ($field['type']) {
+                                case 'text':
+                                case 'number':
+                                    $value = old($name) ?? ($alumni[$name] ?? '');
+                                    echo "<input type='{$field['type']}' name='{$name}' value='" . esc($value) . "' class='form-control' {$required}>";
+                                    break;
+                                case 'textarea':
+                                    $value = old($name) ?? ($alumni[$name] ?? '');
+                                    echo "<textarea name='{$name}' class='form-control' rows='3' {$required}>" . esc($value) . "</textarea>";
+                                    break;
+                                case 'select':
+                                    $selectedValue = old($name) ?? ($alumni[$name] ?? '');
+                                    echo "<select name='{$name}' class='form-select' {$required}>";
+                                    echo "<option value=''>Pilih</option>";
+
+                                    if (!empty($field['source_table']) && isset($select_options[$field['source_table']])) {
+                                        foreach ($select_options[$field['source_table']] as $opt) {
+                                            $value = esc($opt['value'] ?? array_values($opt)[0]);
+                                            $label = esc($opt['label'] ?? ($opt[1] ?? $value));
+                                            $selected = ($value == $selectedValue) ? 'selected' : '';
+                                            echo "<option value='{$value}' {$selected}>{$label}</option>";
+                                        }
+                                    } else if (is_array($options)) {
+                                        foreach ($options as $opt) {
+                                            $selected = ($opt == $selectedValue) ? 'selected' : '';
+                                            echo "<option value='" . esc($opt) . "' {$selected}>" . esc($opt) . "</option>";
+                                        }
+                                    }
+                                    echo "</select>";
+                                    break;
+                                default:
+                                    echo "<input type='text' name='{$name}' class='form-control' {$required}>";
+                            }
+                            ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-                <div class="col-md-6">
-                    <label>Nama</label>
-                    <input type="text" class="form-control" name="nama" value="<?= esc($alumni['nama']) ?>" <?= $alumni['nama'] !== "" ? 'readonly' : '' ?>>
-                </div>
-                <div class="col-md-6 mt-2">
-                    <label>Program Studi</label>
-                    <?php if (!empty($alumni['nama_prodi'])): ?>
-                        <input type="text" class="form-control" value="<?= esc($alumni['nama_prodi']) ?> (<?= esc($alumni['jenjang']) ?>)" readonly>
-                    <?php else: ?>
-                        <select name="program_studi" class="form-select" required>
-                            <option value="">Pilih Program Studi</option>
-                            <?php foreach ($prodi_list as $prodi): ?>
-                                <option value="<?= esc($prodi['kode_prodi']) ?>">
-                                    <?= esc($prodi['nama_prodi']) ?> (<?= esc($prodi['jenjang']) ?>)
-                                </option>
-                            <?php endforeach ?>
-                        </select>
-                    <?php endif ?>
-                </div>
-                <div class="col-md-6 mt-2">
-                    <label>Tahun Lulus</label>
-                    <input type="text" class="form-control" name="tahun_lulus" value="<?= esc($alumni['tahun_lulus']) ?>">
-                </div>
-            </div>
-
-            <hr>
-            <h5>Status Pekerjaan</h5>
-            <div class="mb-3">
-                <select name="status_pekerjaan" class="form-select" required>
-                    <option value="">Pilih</option>
-                    <option value="bekerja">Bekerja</option>
-                    <option value="wirausaha">Wirausaha</option>
-                    <option value="belum_bekerja">Belum Bekerja</option>
-                    <option value="studi_lanjut">Studi Lanjut</option>
-                </select>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <label>Institusi Tempat Bekerja</label>
-                    <input type="text" class="form-control" name="institusi_bekerja">
-                </div>
-                <div class="col-md-6">
-                    <label>Posisi Pekerjaan</label>
-                    <input type="text" class="form-control" name="posisi_pekerjaan">
-                </div>
-            </div>
-
-            <hr>
-            <h5>Informasi Tambahan Pekerjaan</h5>
-
-            <div class="mb-3">
-                <label>Jenis Pekerjaan</label>
-                <select name="sektor_tempat_kerja" class="form-select">
-                    <option value="">Pilih</option>
-                    <option value="PNS">PNS</option>
-                    <option value="Swasta">Swasta</option>
-                    <option value="Wirausaha">Wirausaha</option>
-                    <option value="Lainnya">Lainnya</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label>Pekerjaan Sesuai Bidang?</label>
-                <select name="sesuai_bidang" class="form-select">
-                    <option value="">Pilih</option>
-                    <option value="ya">Ya</option>
-                    <option value="tidak">Tidak</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label>Tahun Mulai Bekerja</label>
-                <input type="number" name="tahun_mulai_bekerja" class="form-control" placeholder="Contoh: 2024">
-            </div>
-
-            <div class="mb-3">
-                <label>Mulai Mencari Kerja (Bulan sebelum/setelah lulus)</label>
-                <input type="text" name="bulan_mulai_mencari_pekerjaan" class="form-control" placeholder="Contoh: 2 bulan setelah lulus">
-            </div>
-
-            <div class="mb-3">
-                <label>Cara Mendapatkan Pekerjaan</label>
-                <textarea class="form-control" name="cara_mendapat_kerja" rows="3"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label>Gaji Pertama</label>
-                <input type="number" name="gaji_pertama" class="form-control" placeholder="Contoh: 2500000">
-            </div>
+            <?php endforeach; ?>
 
             <button type="button" class="btn btn-success mt-3" onclick="nextStep()">Lanjut <i class="bi bi-arrow-bar-right"></i></button>
         </div>
 
-        <!-- Step 2 -->
+        <!-- Step 2 di bawahnya -->
         <div id="step-2" class="step d-none">
-            <h5>Penilaian terhadap pembelajaran di kampus</h5>
+            <h5 class="mb-2">Kuesioner Step 2</h5>
+
             <?php
-            $pertanyaan = [
-                'kepuasan_etika' => 'Etika',
-                'kepuasan_keahlian_bidan_ilmu' => 'Keahlian Bidang Ilmu',
-                'kepuasan_bahasa_asing' => 'Bahasa Asing',
-                'kepuasan_teknologi_informasi' => 'Teknologi Informasi',
-                'kepuasan_komunikasi' => 'Komunikasi',
-                'kepuasan_kerjasama' => 'Kerja Sama',
-                'kepuasan_pengembangan_diri' => 'Pengembangan Diri',
-            ];
-
-            foreach ($pertanyaan as $field => $label):
+            // Grouping fields_step2 by header
+            $groups2 = [];
+            foreach ($fields_step2 as $field) {
+                $header = !empty($field['header']) ? $field['header'] : 'Bagian Tanpa Judul';
+                if (!isset($groups2[$header])) {
+                    $groups2[$header] = [];
+                }
+                $groups2[$header][] = $field;
+            }
             ?>
-                <div class="mb-3">
-                    <label><?= $label ?> (1 = Sangat Kurang, 5 = Sangat Baik)</label>
-                    <select class="form-select" name="<?= $field ?>" required>
-                        <option value="">Pilih</option>
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <option value="<?= $i ?>"><?= $i ?></option>
-                        <?php endfor ?>
-                    </select>
+
+            <?php foreach ($groups2 as $header => $fields): ?>
+                <h5 class="mt-3 mb-2"><?= esc($header) ?></h5>
+                <div class="row">
+                    <?php foreach ($fields as $field): ?>
+                        <div class="col-md-6 mb-3">
+                            <label><?= esc($field['label']) ?> <?= $field['required'] ? '*' : '' ?></label>
+                            <?php
+                            $name = esc($field['field_name']);
+                            $required = $field['required'] ? 'required' : '';
+                            $options = json_decode($field['options'], true);
+                            switch ($field['type']) {
+                                case 'text':
+                                case 'number':
+                                    echo "<input type='{$field['type']}' name='{$name}' class='form-control' {$required}>";
+                                    break;
+                                case 'textarea':
+                                    echo "<textarea name='{$name}' class='form-control' rows='3' {$required}></textarea>";
+                                    break;
+                                case 'select':
+                                    echo "<select name='{$name}' class='form-select' {$required}>";
+                                    echo "<option value=''>Pilih</option>";
+                                    if (!empty($field['source_table'])) {
+                                        $sourceData = ${$field['source_table'] . '_list'} ?? [];
+                                        foreach ($sourceData as $opt) {
+                                            $values = array_values($opt);
+                                            $value = esc($values[0]);
+                                            $label = esc($values[1] ?? $values[0]);
+                                            echo "<option value='{$value}'>{$label}</option>";
+                                        }
+                                    } else if (is_array($options)) {
+                                        foreach ($options as $opt) {
+                                            echo "<option value='" . esc($opt) . "'>" . esc($opt) . "</option>";
+                                        }
+                                    }
+                                    echo "</select>";
+                                    break;
+                                default:
+                                    echo "<input type='text' name='{$name}' class='form-control' {$required}>";
+                            }
+                            ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
-            <?php endforeach ?>
+            <?php endforeach; ?>
 
-            <hr>
-            <h5>Relevansi Kurikulum & Saran</h5>
-            <div class="mb-3">
-                <label>Relevansi Kurikulum</label>
-                <select name="relevansi_kurikulum" class="form-select" required>
-                    <option value="">Pilih</option>
-                    <option value="tinggi">Tinggi</option>
-                    <option value="sedang">Sedang</option>
-                    <option value="rendah">Rendah</option>
-                </select>
+            <div class="d-flex justify-content-between mt-3">
+                <button type="button" class="btn btn-secondary" onclick="prevStep()"><i class="bi bi-arrow-bar-left"></i> Kembali</button>
+                <button type="submit" class="btn btn-primary">Kirim Kuesioner</button>
             </div>
-
-            <div class="mb-3">
-                <label>Saran/Masukan untuk Kampus</label>
-                <textarea class="form-control" name="saran_kurikulum" rows="3"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label>Bagaimana harapan Anda terhadap lulusan UMAHA?</label>
-                <textarea class="form-control" name="harapan_umaha" rows="3"></textarea>
-            </div>
-
-            <button type="button" class="btn btn-secondary" onclick="prevStep()">Kembali</button>
-            <button type="submit" class="btn btn-success">Simpan Kuesioner</button>
         </div>
     </form>
 </div>
 
-<!-- Stepper Script -->
 <script>
     function nextStep() {
         const requiredFields = document.querySelectorAll('#step-1 [required]');
@@ -210,6 +183,5 @@
         });
     }
 </script>
-
 
 <?= $this->endSection() ?>

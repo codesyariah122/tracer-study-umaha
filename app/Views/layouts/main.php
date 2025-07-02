@@ -205,11 +205,18 @@
                     <label class="form-label">Email</label>
                     <input type="email" class="form-control" name="email" required>
                     <label class="form-label mt-2">Password</label>
-                    <input type="password" class="form-control" name="password" required>
+                    <div class="position-relative">
+                        <input type="password" class="form-control" name="password" id="loginPassword" required>
+                        <i class="bi bi-eye-slash toggle-password" id="togglePassword" style="position: absolute; top: 50%; right: 12px; transform: translateY(-50%); cursor: pointer;"></i>
+                    </div>
+
                     <div id="loginError" class="text-danger mt-2 small"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success w-100" type="submit">MASUK</button>
+                    <button id="loginButton" class="btn btn-success w-100" type="submit">
+                        <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="loginSpinner"></span>
+                        <span id="loginText">MASUK</span>
+                    </button>
                 </div>
 
 
@@ -233,6 +240,22 @@
 
     <!-- JS Login -->
     <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('loginPassword');
+            const icon = this;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
+    </script>
+    <script>
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', e => {
             cursor.style.top = `${e.clientY}px`;
@@ -254,6 +277,17 @@
             const form = this;
             const data = new FormData(form);
 
+            const btn = document.getElementById('loginButton');
+            const spinner = document.getElementById('loginSpinner');
+            const text = document.getElementById('loginText');
+            const errorBox = document.getElementById('loginError');
+
+            // Aktifkan loading
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            text.textContent = 'Memproses...';
+            errorBox.textContent = '';
+
             fetch('<?= base_url('auth/login') ?>', {
                     method: 'POST',
                     body: data
@@ -263,13 +297,21 @@
                     if (res.success) {
                         window.location.href = res.redirect;
                     } else {
-                        document.getElementById('loginError').textContent = res.message;
+                        errorBox.textContent = res.message;
                     }
                 })
-                .catch(() => {
-                    document.getElementById('loginError').textContent = 'Terjadi kesalahan saat login.';
+                .catch((e) => {
+                    console.log(e);
+                    errorBox.textContent = 'Terjadi kesalahan saat login.';
+                })
+                .finally(() => {
+                    // Matikan loading setelah selesai
+                    btn.disabled = false;
+                    spinner.classList.add('d-none');
+                    text.textContent = 'MASUK';
                 });
         });
+
 
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {

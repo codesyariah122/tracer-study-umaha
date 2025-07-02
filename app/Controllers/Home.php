@@ -3,7 +3,7 @@
 // app/Controllers/Home.php
 namespace App\Controllers;
 
-use App\Models\{TahunModel, SettingsModel};
+use App\Models\{TahunModel, SettingsModel, LandingModel};
 use CodeIgniter\Controller;
 
 class Home extends BaseController
@@ -11,10 +11,21 @@ class Home extends BaseController
     public function index()
     {
         $tahunModel = new TahunModel();
+        $landing      = new LandingModel();
         $data['tahun_list'] = $tahunModel->getTahunUnik(); // ini benar
         $periodeModel = new \App\Models\PeriodeModel();
         $settingModel = new SettingsModel();
         $data['pdfLink'] = $settingModel->getValue('panduan_tracer') ?? '#';
+        $data['landing'] = [
+            'title'       => $landing->getValue('judul')      ?? 'Tracer Study UMAHA',
+            'subtitle'    => $landing->getValue('subjudul')   ?? 'Jembatan antara kampus ...',
+            'description' => $landing->getValue('konten') ??
+                'Dukung pengembangan kurikulum ...'
+        ];
+
+        // -------- social links ----------
+        $data['social_links'] = $landing->getSocialLinks();
+
         $data['menuItems'] = [
             [
                 'icon' => 'bi-people-fill',

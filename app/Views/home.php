@@ -185,14 +185,10 @@
 <div class="position-relative overflow-hidden p-5 p-md-5 mb-5 text-center bg-light rounded-4 shadow-sm">
     <div class="col-md-8 mx-auto home-header">
         <h1 class="display-5 fw-bold text-success mb-3">
-            <i class="bi bi-graph-up-arrow me-2"></i>Tracer Study UMAHA
+            <i class="bi bi-graph-up-arrow me-2"></i><?= esc($landing['title']) ?>
         </h1>
-        <p class="fs-5 text-muted mb-3">
-            Jembatan antara kampus dan alumni untuk menilai dampak pendidikan dan kesiapan dunia kerja lulusan UMAHA.
-        </p>
-        <p class="text-secondary fw-semibold mb-4">
-            Dukung pengembangan kurikulum dan peningkatan mutu lulusan dengan berpartisipasi aktif dalam Tracer Study Universitas Maarif Hasyim Latif.
-        </p>
+        <p class="fs-5 text-muted mb-3"><?= esc($landing['subtitle']) ?></p>
+        <p class="text-secondary fw-semibold mb-4"><?= esc($landing['description']) ?></p>
         <a href="#survey" class="btn btn-success btn-lg px-4 rounded-pill shadow-sm">
             <i class="bi bi-pencil-square me-1"></i> Mulai Isi Kuesioner
         </a>

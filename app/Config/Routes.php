@@ -52,6 +52,16 @@ $routes->group('admin', ['filter' => 'admin'], function ($routes) {
     // ✅ Route untuk upload dokumen panduan
     $routes->get('panduan', 'Admin\Panduan::index');
     $routes->post('panduan/upload', 'Admin\Panduan::upload');
+
+    // ✅ Route untuk mengelola konten halaman landing page tracer study umaha
+    $routes->get('landing', 'Admin\Landing::index');
+    $routes->post('landing/add', 'Admin\Landing::add');
+    $routes->post('landing/update', 'Admin\Landing::update');
+    $routes->get('landing/edit/(:num)', 'Admin\Landing::edit/$1');
+
+    $routes->get('kuesionerfields', 'Admin\KuesionerFields::index');
+    $routes->get('kuesionerfields/create', 'Admin\KuesionerFields::create');
+    $routes->post('kuesionerfields/store', 'Admin\KuesionerFields::store');
 });
 
 $routes->get('alumni/dashboard', 'Alumni\Dashboard::index', ['filter' => 'auth']);
