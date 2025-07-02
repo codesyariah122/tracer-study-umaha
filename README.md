@@ -13,7 +13,13 @@ Website resmi Tracer Study untuk Universitas Maarif Hasyim Latif (UMAHA), dibang
 - [Highcharts](https://www.highcharts.com/)
 - [DataTables](https://datatables.net/)
 
----
+---  
+
+#### Before running update dependencies (optional)  
+```
+composer update
+composer install --prefer-dist --optimize-autoloader
+```  
 
 ## 🎯 Features
 

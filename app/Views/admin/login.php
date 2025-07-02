@@ -24,12 +24,31 @@
                 </div>
                 <div class="mb-3">
                     <label>Password</label>
-                    <input type="password" name="password" class="form-control" required>
+                    <div class="input-group">
+                        <input type="password" name="password" id="passwordInput" class="form-control" required>
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">
+                            <span id="eyeEmoji">🫣</span>
+                        </button>
+                    </div>
                 </div>
                 <button class="btn btn-primary w-100">Login</button>
             </form>
         </div>
     </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeEmoji = document.getElementById('eyeEmoji');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeEmoji.textContent = '👁️'; // tampak
+            } else {
+                passwordInput.type = 'password';
+                eyeEmoji.textContent = '🫣'; // sembunyi
+            }
+        }
+    </script>
 </body>
 
 </html>

@@ -16,7 +16,7 @@
 
         <!-- Info Tambahan -->
         <div class="small">
-            <strong>Universitas Maarif Hasyim Latif (UMAHA)</strong><br>
+            <a href="https://tracer-study.umaha.demo-tokoweb.my.id"><strong>Universitas Maarif Hasyim Latif (UMAHA)</strong></a> <br>
             Tracer Study &mdash; Sidoarjo, Jawa Timur<br>
             &copy; <?= date('Y') ?> UMAHA. All rights reserved.
         </div>

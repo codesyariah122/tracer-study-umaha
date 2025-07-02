@@ -23,7 +23,7 @@ class Home extends BaseController
                 'modal' => true
             ],
             [
-                'icon' => 'bi-person-check-fill',
+                'icon' => 'bi-person-fill-check',
                 'text' => 'KUESIONER PENGGUNA LULUSAN',
                 'link' => base_url('/kuesioner/pengguna')
             ],
@@ -33,11 +33,17 @@ class Home extends BaseController
                 'link' => base_url('/laporan/alumni')
             ],
             [
-                'icon' => 'bi-building',
+                'icon' => 'bi-building-check',
                 'text' => 'REKAPITULASI DATA PENGGUNA LULUSAN',
                 'link' => base_url('/laporan/pengguna')
             ],
         ];
+
+        foreach ($data['menuItems'] as &$item) {
+            // hapus prefix 'bi-' jika perlu, sesuaikan nama file
+            $iconFileName = str_replace('bi-', '', $item['icon']);
+            $item['background'] = iconToBackground($iconFileName);
+        }
         $data['periode_list'] = $periodeModel->orderBy('tahun', 'DESC')->findAll();
         return view('home', $data);
     }

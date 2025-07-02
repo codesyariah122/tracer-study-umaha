@@ -13,6 +13,8 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
+$routes->get('auth/google',          'Auth::google');
+$routes->get('auth/google/callback', 'Auth::googleCallback');
 $routes->post('auth/login', 'Auth::login');
 $routes->get('auth/logout', 'Auth::logout');
 $routes->get('kuesioner/alumni', 'KuesionerAlumni::index', ['filter' => 'auth']);
