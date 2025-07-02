@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\AlumniModel;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Firebase\JWT\JWK;
 use Google\Auth\OAuth2;
 
 class Auth extends BaseController
@@ -30,7 +31,38 @@ class Auth extends BaseController
     /** ────────── LOGIN MANUAL (tidak diubah) ────────── */
     public function login()
     {
-        $email = $this->request->getPost('email');
+        $code = $this->request->getGet('code');
+        if (!$code) {
+            return redirect()->to('/')->with('error', 'Login dibatalkan');
+        }
+
+        $this->oauth->setCode($code);
+
+        try {
+            $token = $this->oauth->fetchAuthToken();
+        } catch (\Exception $e) {
+            return redirect()->to('/')->with('error', 'Gagal ambil token: ' . $e->getMessage());
+        }
+
+        $idToken = $token['id_token'] ?? null;
+        if (!$idToken) {
+            return redirect()->to('/')->with('error', 'Token ID tidak ditemukan');
+        }
+
+        // ✅ Ambil public key dari Google (pakai cara resmi)
+        $jwks = json_decode(file_get_contents('https://www.googleapis.com/oauth2/v3/certs'), true);
+        $keys = JWK::parseKeySet($jwks); // otomatis ambil dari "kid"
+
+        try {
+            $payload = JWT::decode($idToken, $keys); // JWT v6 sudah tidak butuh algo di param ke-3
+        } catch (\Exception $e) {
+            return redirect()->to('/')->with('error', 'Token tidak valid: ' . $e->getMessage());
+        }
+
+        $email = $payload->email ?? null;
+        if (!$email) {
+            return redirect()->to('/')->with('error', 'Email tidak ditemukan di ID token');
+        }
         $password = $this->request->getPost('password');
 
         $alumniModel = new \App\Models\AlumniModel();
@@ -82,23 +114,30 @@ class Auth extends BaseController
             return redirect()->to('/')->with('error', 'Token ID tidak ditemukan');
         }
 
-        // Decode ID Token
-        $payload = JWT::decode($idToken, new Key($this->getGooglePublicKey(), 'RS256'));
+        // ✅ Cara resmi
+        $jwks = json_decode(file_get_contents('https://www.googleapis.com/oauth2/v3/certs'), true);
+        $keys = JWK::parseKeySet($jwks);
+
+        try {
+            $payload = JWT::decode($idToken, $keys);
+        } catch (\Exception $e) {
+            return redirect()->to('/')->with('error', 'Token tidak valid: ' . $e->getMessage());
+        }
 
         $email = $payload->email ?? null;
         if (!$email) {
             return redirect()->to('/')->with('error', 'Email tidak ditemukan di ID token');
         }
 
-        // Simpan atau login user
-        $alumniModel = new AlumniModel();
+        // Login alumni
+        $alumniModel = new \App\Models\AlumniModel();
         $alumni = $alumniModel->where('email', $email)->first();
 
         if (!$alumni) {
             $alumniId = $alumniModel->insert([
-                'nama'   => $payload->name ?? $email,
-                'email'  => $email,
-                'password' => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
+                'nama'       => $payload->name ?? $email,
+                'email'      => $email,
+                'password'   => password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
                 'avatar_url' => $payload->picture ?? null,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
@@ -112,8 +151,18 @@ class Auth extends BaseController
             'logged_in'   => true,
         ]);
 
+        echo "<script>
+            if (window.opener) {
+                window.opener.postMessage('google-login-success', '*');
+                window.close();
+            } else {
+                window.location.href = '" . base_url('alumni/dashboard') . "';
+            }
+        </script>";
+        exit;
         return redirect()->to(base_url('alumni/dashboard'));
     }
+
 
     // Ambil public key dari Google (hanya contoh cepat — bisa kamu cache biar gak download terus)
     protected function getGooglePublicKey()

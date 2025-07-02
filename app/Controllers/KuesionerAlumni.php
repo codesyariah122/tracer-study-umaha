@@ -24,12 +24,16 @@ class KuesionerAlumni extends BaseController
         $builder->where('alumni.id', $id);
         $query = $builder->get();
         $data['alumni'] = $query->getRowArray();
+        $prodiBuilder = $this->db->table('prodi');
+        $data['prodi_list'] = $prodiBuilder->get()->getResultArray();
+
         return view('kuesioner_alumni', $data);
     }
 
     public function simpan()
     {
         $tracerModel = new \App\Models\TracerModel();
+        $alumniModel = new \App\Models\AlumniModel(); // tambahkan model alumni
 
         if (!$this->validate([
             'status_pekerjaan' => 'required',
@@ -39,6 +43,16 @@ class KuesionerAlumni extends BaseController
         }
 
         $data = $this->request->getPost();
+
+        $alumniId = session()->get('alumni_id');
+        $alumniUpdateData = [
+            'nim' => $data['nim'],
+            'nama' => $data['nama'],
+            'program_studi' => $data['program_studi'] ?? null,
+            'tahun_lulus' => $data['tahun_lulus'] ?? null,
+        ];
+        $alumniModel->update($alumniId, $alumniUpdateData);
+
         $data['alumni_id'] = session()->get('alumni_id');
         $tracerModel->save($data);
 

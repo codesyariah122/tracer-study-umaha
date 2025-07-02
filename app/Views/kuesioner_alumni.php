@@ -18,19 +18,30 @@
             <div class="row">
                 <div class="col-md-6">
                     <label>NIM</label>
-                    <input type="text" class="form-control" value="<?= esc($alumni['nim']) ?>" readonly>
+                    <input type="text" class="form-control" name="nim" value="<?= esc($alumni['nim']) ?>" <?= $alumni['nim'] !== "" ? 'readonly' : '' ?>>
                 </div>
                 <div class="col-md-6">
                     <label>Nama</label>
-                    <input type="text" class="form-control" value="<?= esc($alumni['nama']) ?>" readonly>
+                    <input type="text" class="form-control" name="nama" value="<?= esc($alumni['nama']) ?>" <?= $alumni['nama'] !== "" ? 'readonly' : '' ?>>
                 </div>
                 <div class="col-md-6 mt-2">
                     <label>Program Studi</label>
-                    <input type="text" class="form-control" value="<?= esc($alumni['nama_prodi']) ?> (<?= esc($alumni['jenjang']) ?>)" readonly>
+                    <?php if (!empty($alumni['nama_prodi'])): ?>
+                        <input type="text" class="form-control" value="<?= esc($alumni['nama_prodi']) ?> (<?= esc($alumni['jenjang']) ?>)" readonly>
+                    <?php else: ?>
+                        <select name="program_studi" class="form-select" required>
+                            <option value="">Pilih Program Studi</option>
+                            <?php foreach ($prodi_list as $prodi): ?>
+                                <option value="<?= esc($prodi['kode_prodi']) ?>">
+                                    <?= esc($prodi['nama_prodi']) ?> (<?= esc($prodi['jenjang']) ?>)
+                                </option>
+                            <?php endforeach ?>
+                        </select>
+                    <?php endif ?>
                 </div>
                 <div class="col-md-6 mt-2">
                     <label>Tahun Lulus</label>
-                    <input type="text" class="form-control" value="<?= esc($alumni['tahun_lulus']) ?>" readonly>
+                    <input type="text" class="form-control" name="tahun_lulus" value="<?= esc($alumni['tahun_lulus']) ?>">
                 </div>
             </div>
 
