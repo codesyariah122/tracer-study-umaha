@@ -42,6 +42,59 @@ composer install --prefer-dist --optimize-autoloader
 - Tabel interaktif (DataTables)
 - Grafik statistik (Highcharts)
 
+### 📋 Form Dinamis Kuesioner
+
+    - Admin dapat menambahkan form kuesioner secara dinamis melalui menu Manajemen Form Kuesioner
+
+    - Setiap field dapat dikonfigurasi:
+
+        - Label: nama tampilan field
+
+        - Nama Field (field_name): nama kolom database (tanpa spasi)
+
+        - Tipe Input: text, number, select, textarea
+
+        - Step Form: dikelompokkan menjadi Step 1 dan Step 2
+
+        - Urutan Tampil: posisi field di dalam form
+
+        - Wajib Diisi: opsi required atau tidak
+
+        - Header/Judul Seksi: untuk pengelompokan tampilan form
+
+        - Select Options:
+
+            - Input manual dalam format JSON (contoh: ["Ya","Tidak"])
+
+            - Atau ambil data dari tabel (misal: prodi, pekerjaan, dll)
+
+    - Semua field yang ditambahkan akan:
+
+        - Tersimpan di tabel kuesioner_fields
+
+        - Dirender otomatis di form isian alumni
+
+        - Disimpan otomatis ke tabel tracer_study (tanpa perlu ubah model)
+
+    - Field baru langsung aktif tanpa ubah kode Controller atau Model
+
+### 📁 Contoh Struktur Data Dinamis
+```
+field_name	label	type	required	step	options / source_table
+status_pekerjaan	Status Pekerjaan	select	Ya	1	["Bekerja","Wirausaha"]
+gaji_pertama	Gaji Pertama	number	Tidak	2	-
+program_studi	Program Studi	select	Ya	1	source_table: prodi
+```  
+
+### 🧠 Mekanisme Dinamis
+
+    - Sistem akan otomatis membaca field dari tabel kuesioner_fields
+
+    - Form yang dirender akan menyesuaikan tanpa hardcoded HTML
+
+    - Data yang disubmit akan tersimpan secara otomatis ke tracer_study karena Model TracerModel menyesuaikan kolom secara dinamis
+
+    - Tidak perlu ubah kode saat menambah field baru (cukup lewat admin panel)
 ---
 
 ## 🚀 Getting Started
