@@ -103,10 +103,10 @@ class KuesionerAlumni extends BaseController
         $post['alumni_id'] = $alumniId;
 
         // Filter input yang sesuai allowedFields
-        $dataToSave = array_intersect_key($post, array_flip($allowedFields));
+        // $dataToSave = array_intersect_key($post, array_flip($allowedFields));
 
         // Simpan ke database
-        $tracerModel->insert($dataToSave);
+        $tracerModel->insert($post);
 
         return redirect()->to('/')->with('success', 'Data tracer berhasil disimpan.');
     }
