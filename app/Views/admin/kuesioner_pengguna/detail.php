@@ -19,42 +19,109 @@
     <div class="card mb-4">
 
         <div class="card-header fw-bold">
-            Data Alumni Dinilai
+            Data Alumni/Pegawai Dinilai
         </div>
 
         <div class="card-body">
 
-            <div class="row">
+            <?php if (!empty($details)): ?>
 
-                <div class="col-md-6 mb-3">
-                    <label>Nama Alumni</label>
-                    <div class="fw-semibold">
-                        <?= esc($pengguna['nama_alumni']) ?>
+                <?php foreach ($details as $i => $detail): ?>
+
+                    <div class="border rounded p-3 mb-3">
+
+                        <h6 class="fw-bold mb-3">
+                            Alumni Dinilai #<?= $i + 1 ?>
+                        </h6>
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label>Nama Pegawai</label>
+                                <div class="fw-semibold">
+                                    <?= esc($detail['nama_pegawai_dinilai'] ?: $detail['nama_alumni']) ?>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>NIM</label>
+                                <div class="fw-semibold">
+                                    <?= esc($detail['nim'] ?? '-') ?>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Program Studi</label>
+                                <div class="fw-semibold">
+                                    <?= esc($detail['asal_program_studi_pegawai'] ?: $detail['nama_prodi']) ?>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Tahun Lulus</label>
+                                <div class="fw-semibold">
+                                    <?= esc($detail['tahun_lulus_pegawai'] ?: $detail['tahun_lulus_alumni']) ?>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label>Jenjang</label>
+                                <div class="fw-semibold">
+                                    <?= esc($detail['jenjang'] ?? '-') ?>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Etika</th>
+                                        <th>Keahlian</th>
+                                        <th>Bahasa</th>
+                                        <th>TI</th>
+                                        <th>Komunikasi</th>
+                                        <th>Kerjasama</th>
+                                        <th>Pengembangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><?= esc($detail['etika_kerja']) ?></td>
+                                        <td><?= esc($detail['keahlian_profesional']) ?></td>
+                                        <td><?= esc($detail['penguasaan_bahasa_asing']) ?></td>
+                                        <td><?= esc($detail['teknologi_informasi']) ?></td>
+                                        <td><?= esc($detail['komunikasi']) ?></td>
+                                        <td><?= esc($detail['kerjasama']) ?></td>
+                                        <td><?= esc($detail['pengembangan_diri']) ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label>Harapan terhadap lulusan UMAHA</label>
+                                <div><?= nl2br(esc($detail['harapan_lulusan_umaha'] ?? '-')) ?></div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label>Saran dan masukan</label>
+                                <div><?= nl2br(esc($detail['saran_umum'] ?? '-')) ?></div>
+                            </div>
+                        </div>
+
                     </div>
+
+                <?php endforeach; ?>
+
+            <?php else: ?>
+
+                <div class="text-muted">
+                    Belum ada detail alumni yang tersimpan.
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label>NIM</label>
-                    <div class="fw-semibold">
-                        <?= esc($pengguna['nim']) ?>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label>Program Studi</label>
-                    <div class="fw-semibold">
-                        <?= esc($pengguna['nama_prodi']) ?>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label>Jenjang</label>
-                    <div class="fw-semibold">
-                        <?= esc($pengguna['jenjang']) ?>
-                    </div>
-                </div>
-
-            </div>
+            <?php endif; ?>
 
         </div>
 

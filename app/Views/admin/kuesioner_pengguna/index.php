@@ -461,6 +461,8 @@
 
                         <th>Tahun Merekrut</th>
 
+                        <th>Alumni Dinilai</th>
+
                         <th>Tindakan</th>
 
                     </tr>
@@ -547,6 +549,16 @@
 
                                 <td>
 
+                                    <span class="badge bg-success">
+
+                                        <?= esc($p['total_alumni_dinilai'] ?? 0) ?>
+
+                                    </span>
+
+                                </td>
+
+                                <td>
+
                                     <div class="action-group">
 
                                         <a href="<?= base_url('admin/kuesioner-pengguna/detail/' . $p['id']) ?>"
@@ -585,7 +597,7 @@
 
                         <tr>
 
-                            <td colspan="6"
+                            <td colspan="7"
                                 class="text-center py-5">
 
                                 <div class="text-muted">

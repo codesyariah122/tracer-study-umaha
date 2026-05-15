@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\PenggunaLulusanDetailModel;
 use App\Models\PenggunaModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -22,7 +23,17 @@ class KuesionerPengguna extends BaseController
     public function index()
     {
         $data['title'] = 'Data Pengguna Lulusan';
-        $data['pengguna'] = $this->penggunaModel->orderBy('created_at', 'DESC')->findAll();
+        $data['pengguna'] = $this->penggunaModel
+            ->select('
+                pengguna_lulusan.*,
+                (
+                    SELECT COUNT(*)
+                    FROM pengguna_lulusan_detail
+                    WHERE pengguna_lulusan_detail.pengguna_id = pengguna_lulusan.id
+                ) as total_alumni_dinilai
+            ')
+            ->orderBy('pengguna_lulusan.created_at', 'DESC')
+            ->findAll();
 
         return view('admin/kuesioner_pengguna/index', $data);
     }
@@ -88,10 +99,34 @@ class KuesionerPengguna extends BaseController
             );
         }
 
+        $detailModel = new PenggunaLulusanDetailModel();
+        $details = $detailModel
+            ->select('
+                pengguna_lulusan_detail.*,
+                alumni.nim,
+                alumni.nama as nama_alumni,
+                alumni.tahun_lulus as tahun_lulus_alumni,
+                prodi.nama_prodi,
+                prodi.jenjang
+            ')
+            ->join(
+                'alumni',
+                'alumni.id = pengguna_lulusan_detail.alumni_id',
+                'left'
+            )
+            ->join(
+                'prodi',
+                'prodi.kode_prodi = alumni.program_studi',
+                'left'
+            )
+            ->where('pengguna_lulusan_detail.pengguna_id', $id)
+            ->findAll();
+
         return view(
             'admin/kuesioner_pengguna/detail',
             [
-                'pengguna' => $pengguna
+                'pengguna' => $pengguna,
+                'details' => $details,
             ]
         );
     }
@@ -101,7 +136,27 @@ class KuesionerPengguna extends BaseController
     // ============================================
     public function exportAll()
     {
-        $data = $this->penggunaModel->orderBy('created_at', 'DESC')->findAll();
+        $detailModel = new PenggunaLulusanDetailModel();
+        $data = $detailModel
+            ->select('
+                pengguna_lulusan_detail.*,
+                pengguna_lulusan.nama_perusahaan,
+                pengguna_lulusan.alamat_perusahaan,
+                pengguna_lulusan.nama_pengisi,
+                pengguna_lulusan.jabatan_pengisi,
+                pengguna_lulusan.email_pengisi,
+                pengguna_lulusan.no_telp_pengisi,
+                pengguna_lulusan.tahun_merekrut,
+                pengguna_lulusan.jumlah_lulusan_direkrut,
+                pengguna_lulusan.created_at as pengguna_created_at
+            ')
+            ->join(
+                'pengguna_lulusan',
+                'pengguna_lulusan.id = pengguna_lulusan_detail.pengguna_id',
+                'left'
+            )
+            ->orderBy('pengguna_lulusan.created_at', 'DESC')
+            ->findAll();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -117,6 +172,9 @@ class KuesionerPengguna extends BaseController
             'No Telp',
             'Tahun Merekrut',
             'Jumlah Lulusan Direkrut',
+            'Nama Pegawai Dinilai',
+            'Asal Program Studi Pegawai',
+            'Tahun Lulus Pegawai',
             'Etika Kerja',
             'Keahlian Profesional',
             'Bahasa Asing',
@@ -147,6 +205,9 @@ class KuesionerPengguna extends BaseController
             $sheet->setCellValue($col++ . $row, $d['no_telp_pengisi']);
             $sheet->setCellValue($col++ . $row, $d['tahun_merekrut']);
             $sheet->setCellValue($col++ . $row, $d['jumlah_lulusan_direkrut']);
+            $sheet->setCellValue($col++ . $row, $d['nama_pegawai_dinilai']);
+            $sheet->setCellValue($col++ . $row, $d['asal_program_studi_pegawai']);
+            $sheet->setCellValue($col++ . $row, $d['tahun_lulus_pegawai']);
             $sheet->setCellValue($col++ . $row, $d['etika_kerja']);
             $sheet->setCellValue($col++ . $row, $d['keahlian_profesional']);
             $sheet->setCellValue($col++ . $row, $d['penguasaan_bahasa_asing']);
@@ -155,7 +216,7 @@ class KuesionerPengguna extends BaseController
             $sheet->setCellValue($col++ . $row, $d['kerjasama']);
             $sheet->setCellValue($col++ . $row, $d['pengembangan_diri']);
             $sheet->setCellValue($col++ . $row, $d['saran_umum']);
-            $sheet->setCellValue($col++ . $row, $d['created_at']);
+            $sheet->setCellValue($col++ . $row, $d['pengguna_created_at']);
             $row++;
         }
 
@@ -191,6 +252,11 @@ class KuesionerPengguna extends BaseController
             return redirect()->to(base_url('admin/pengguna'))->with('error', 'Data tidak ditemukan.');
         }
 
+        $detailModel = new PenggunaLulusanDetailModel();
+        $details = $detailModel
+            ->where('pengguna_id', $id)
+            ->findAll();
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Pengguna Lulusan');
@@ -219,6 +285,48 @@ class KuesionerPengguna extends BaseController
         foreach ($fields as $label => $value) {
             $sheet->setCellValue('A' . $row, $label);
             $sheet->setCellValue('B' . $row, $value);
+            $row++;
+        }
+
+        $row += 2;
+        $sheet->setCellValue('A' . $row, 'Data Alumni/Pegawai yang Dinilai');
+        $row++;
+
+        $detailHeaders = [
+            'Nama Pegawai',
+            'Program Studi',
+            'Tahun Lulus',
+            'Etika',
+            'Keahlian',
+            'Bahasa Asing',
+            'TI',
+            'Komunikasi',
+            'Kerjasama',
+            'Pengembangan Diri',
+            'Harapan',
+            'Saran',
+        ];
+
+        $col = 'A';
+        foreach ($detailHeaders as $header) {
+            $sheet->setCellValue($col++ . $row, $header);
+        }
+
+        $row++;
+        foreach ($details as $detail) {
+            $col = 'A';
+            $sheet->setCellValue($col++ . $row, $detail['nama_pegawai_dinilai']);
+            $sheet->setCellValue($col++ . $row, $detail['asal_program_studi_pegawai']);
+            $sheet->setCellValue($col++ . $row, $detail['tahun_lulus_pegawai']);
+            $sheet->setCellValue($col++ . $row, $detail['etika_kerja']);
+            $sheet->setCellValue($col++ . $row, $detail['keahlian_profesional']);
+            $sheet->setCellValue($col++ . $row, $detail['penguasaan_bahasa_asing']);
+            $sheet->setCellValue($col++ . $row, $detail['teknologi_informasi']);
+            $sheet->setCellValue($col++ . $row, $detail['komunikasi']);
+            $sheet->setCellValue($col++ . $row, $detail['kerjasama']);
+            $sheet->setCellValue($col++ . $row, $detail['pengembangan_diri']);
+            $sheet->setCellValue($col++ . $row, $detail['harapan_lulusan_umaha']);
+            $sheet->setCellValue($col++ . $row, $detail['saran_umum']);
             $row++;
         }
 
