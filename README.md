@@ -114,6 +114,11 @@ program_studi	Program Studi	select	Ya	1	source_table: prodi
 
     -   Jalankan migrasi dan seed jika tersedia  
 
+    contoh : 
+    ```
+    php spark db:seed TracerPenggunaSeeder
+    ```
+
 3. Start the server  
 ##### Clear cache
 ```

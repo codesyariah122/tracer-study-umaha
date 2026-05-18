@@ -391,9 +391,8 @@
 
                         <th>Kontak</th>
 
-                        <th>Tahun</th>
-
-                        <th>Jumlah Rekrut</th>
+                        <th>Tahun Rekrutmen</th>
+                        <th>Total Alumni Direkrut</th>
 
                     </tr>
 
@@ -497,7 +496,7 @@
 
                                         <i class="bi bi-people-fill"></i>
 
-                                        <?= esc($row['jumlah_lulusan_direkrut']) ?>
+                                        <?= esc($row['total_rekrut']) ?>
 
                                         Lulusan
 
