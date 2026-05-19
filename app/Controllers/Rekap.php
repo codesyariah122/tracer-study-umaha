@@ -103,7 +103,7 @@ class Rekap extends BaseController
         $whereClause = $whereSQL ? 'WHERE ' . implode(' AND ', $whereSQL) : '';
 
         // Helper to run query
-        $runQuery = function($sql) {
+        $runQuery = function ($sql) {
             return $this->db->query($sql)->getResultArray();
         };
 
@@ -300,7 +300,32 @@ class Rekap extends BaseController
             $builder = $builder->like('nama_perusahaan', $nama);
         }
 
-        $data['list'] = $builder->orderBy('created_at', 'DESC')->findAll();
+        // Data untuk chart "Penilaian Pengguna terhadap Lulusan UMAHA"
+        // Ambil skor penilaian pengguna dari tabel detail.
+        $data['list'] = (new \App\Models\PenggunaLulusanDetailModel())
+            ->select('
+        pengguna_lulusan_detail.etika_kerja,
+        pengguna_lulusan_detail.keahlian_profesional,
+        pengguna_lulusan_detail.penguasaan_bahasa_asing,
+        pengguna_lulusan_detail.teknologi_informasi,
+        pengguna_lulusan_detail.komunikasi,
+        pengguna_lulusan_detail.kerjasama,
+        pengguna_lulusan_detail.pengembangan_diri
+    ')
+            ->join(
+                'pengguna_lulusan',
+                'pengguna_lulusan.id = pengguna_lulusan_detail.pengguna_id',
+                'left'
+            )
+            ->when($tahun, function ($q) use ($tahun) {
+                return $q->where('pengguna_lulusan.tahun_merekrut', $tahun);
+            })
+            ->when($nama, function ($q) use ($nama) {
+                return $q->like('pengguna_lulusan.nama_perusahaan', $nama);
+            })
+            ->orderBy('pengguna_lulusan_detail.id', 'ASC')
+            ->findAll();
+
         $data['tahun_list'] = $model->select('tahun_merekrut')->distinct()->orderBy('tahun_merekrut', 'DESC')->findAll();
         $data['filter_tahun'] = $tahun;
         $data['filter_nama'] = $nama;

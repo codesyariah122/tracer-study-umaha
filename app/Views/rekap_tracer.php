@@ -24,39 +24,278 @@
 ?>
 <?= $this->section('content') ?>
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-        <div>
-            <h3 class="fw-bold text-success mb-1">📊 Rekap Tracer Study Alumni</h3>
-            <small class="text-muted">Laporan statistik berdasarkan hasil kuesioner alumni</small>
+<style>
+    body {
+        background: #f4f8f6;
+    }
+
+    .report-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        background:
+            linear-gradient(135deg,
+                rgba(0, 102, 51, 0.96),
+                rgba(0, 153, 102, 0.92)),
+            url('https://pmb.umaha.ac.id/wp-content/uploads/2024/02/umaha.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 75px 40px;
+        color: white;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, .12);
+    }
+
+    .report-hero::before {
+        content: '';
+        position: absolute;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .06);
+        top: -140px;
+        right: -100px;
+    }
+
+    .report-hero::after {
+        content: '';
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .05);
+        bottom: -90px;
+        left: -60px;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 850px;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, .14);
+        backdrop-filter: blur(10px);
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 24px;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 14px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.08rem;
+        opacity: .92;
+        line-height: 1.8;
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 28px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
+        margin-bottom: 40px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 16px;
+        min-height: 54px;
+        border: 1px solid #dbe5df;
+        box-shadow: none !important;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #00a86b;
+    }
+
+    .btn-modern {
+        background: linear-gradient(135deg, #006633, #00a86b);
+        border: none;
+        border-radius: 16px;
+        min-height: 54px;
+        color: white;
+        font-weight: 700;
+        transition: .3s ease;
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .chart-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
+        margin-bottom: 35px;
+    }
+
+    .chart-card-header {
+        padding: 28px 30px 10px;
+    }
+
+    .chart-card-body {
+        padding: 20px 30px 30px;
+    }
+
+    .section-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 14px;
+    }
+
+    .modern-table thead th {
+        background: linear-gradient(135deg, #006633, #009966);
+        color: white;
+        border: none;
+        padding: 16px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .modern-table thead th:first-child {
+        border-radius: 16px 0 0 16px;
+    }
+
+    .modern-table thead th:last-child {
+        border-radius: 0 16px 16px 0;
+    }
+
+    .modern-table tbody tr {
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .03);
+        transition: .3s ease;
+    }
+
+    .modern-table tbody tr:hover {
+        transform: translateY(-2px);
+        background: #f4fff9;
+    }
+
+    .modern-table tbody td {
+        padding: 18px 16px;
+        border: none;
+        vertical-align: middle;
+    }
+
+    .modern-table tbody td:first-child {
+        border-radius: 14px 0 0 14px;
+    }
+
+    .modern-table tbody td:last-child {
+        border-radius: 0 14px 14px 0;
+    }
+
+    .mini-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 20px;
+    }
+
+    @media(max-width:768px) {
+
+        .report-hero {
+            padding: 55px 24px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .chart-card-body {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="container py-5">
+    <!-- HERO -->
+    <div class="report-hero mb-5">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                <i class="bi bi-graph-up-arrow"></i>
+                Statistik Tracer Study
+            </div>
+
+            <h1 class="hero-title">
+                Rekap Tracer Study Alumni
+            </h1>
+
+            <p class="hero-subtitle">
+                Visualisasi statistik tracer study alumni Universitas Maarif Hasyim Latif
+                berdasarkan hasil pengisian kuesioner alumni secara real-time dan terintegrasi.
+            </p>
+
         </div>
+
     </div>
 
-    <form method="get" class="row g-3 mb-5">
-        <div class="col-md-4">
-            <label class="form-label fw-semibold">Filter Tahun</label>
-            <select class="form-select" name="tahun">
-                <option value="">Semua Tahun</option>
-                <?php foreach ($tahun_list as $t): ?>
-                    <option value="<?= $t['tahun_pengisian'] ?>" <?= ($filter_tahun == $t['tahun_pengisian']) ? 'selected' : '' ?>>
-                        <?= $t['tahun_pengisian'] ?>
-                    </option>
-                <?php endforeach ?>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label fw-semibold">Filter Program Studi</label>
-            <select class="form-select" name="prodi">
-                <option value="">Semua Prodi</option>
-                <?php foreach ($prodi_list as $p): ?>
-                    <option value="<?= $p['nama_prodi'] ?>" <?= ($filter_prodi == $p['nama_prodi']) ? 'selected' : '' ?>>
-                        <?= $p['nama_prodi'] ?>
-                    </option>
-                <?php endforeach ?>
-            </select>
-        </div>
-        <div class="col-md-4 align-self-end">
-            <button class="btn btn-success w-100 fw-semibold"><i class="bi bi-funnel-fill me-1"></i> Tampilkan</button>
+    <form method="get" class="filter-card">
+        <div class="row g-4 align-items-end">
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Filter Tahun</label>
+                <select class="form-select" name="tahun">
+                    <option value="">Semua Tahun</option>
+
+                    <?php foreach ($tahun_list as $t): ?>
+                        <option value="<?= $t['tahun_pengisian'] ?>"
+                            <?= ($filter_tahun == $t['tahun_pengisian']) ? 'selected' : '' ?>>
+                            <?= $t['tahun_pengisian'] ?>
+                        </option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Filter Program Studi</label>
+                <select class="form-select" name="prodi">
+                    <option value="">Semua Prodi</option>
+
+                    <?php foreach ($prodi_list as $p): ?>
+                        <option value="<?= $p['nama_prodi'] ?>"
+                            <?= ($filter_prodi == $p['nama_prodi']) ? 'selected' : '' ?>>
+                            <?= $p['nama_prodi'] ?>
+                        </option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-modern w-100">
+                    <i class="bi bi-funnel-fill me-2"></i>
+                    Tampilkan Data
+                </button>
+            </div>
+
         </div>
     </form>
 
@@ -79,15 +318,23 @@
     ?>
 
     <?php foreach ($grafik as $judul => [$var, $key]): ?>
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-light border-bottom d-flex justify-content-between align-items-center">
-                <div class="fw-semibold text-dark"><i class="bi bi-pie-chart-fill text-success me-2"></i> Persentase Berdasarkan <?= $judul ?></div>
+        <div class="chart-card">
+            <div class="chart-card-header">
+
+                <h4 class="section-title">
+                    <?= esc($judul) ?>
+                </h4>
+
+                <div class="section-subtitle">
+                    Visualisasi distribusi data berdasarkan <?= strtolower($judul) ?>.
+                </div>
+
             </div>
-            <div class="card-body">
+            <div class="chart-card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3 mb-md-0">
-                        <table class="table table-sm table-bordered">
-                            <thead class="table-light">
+                        <table class="modern-table">
+                            <thead>
                                 <tr>
                                     <th>#</th>
                                     <th><?= $judul ?></th>
@@ -114,38 +361,46 @@
     <?php endforeach ?>
 
     <!-- Waktu Mendapatkan Pekerjaan -->
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="card-header bg-light border-bottom fw-semibold text-dark">
-            <i class="bi bi-clock-history text-success me-2"></i> Persentase Berdasarkan Rata-rata Waktu Mendapatkan Pekerjaan
+    <div class="chart-card">
+        <div class="chart-card-header">
+
+            <h4 class="section-title">
+                Rata-rata Waktu Mendapatkan Pekerjaan
+            </h4>
+
+            <div class="section-subtitle">
+                Distribusi alumni berdasarkan waktu memperoleh pekerjaan sebelum dan setelah lulus.
+            </div>
+
         </div>
-        <div class="card-body">
+        <div class="chart-card-body">
             <div class="row">
                 <div class="col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3">Sebelum Lulus</h6>
-                    <table class="table table-sm table-bordered mb-3">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Kategori (bulan)</th>
-                                <th>Jumlah</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rekap_bulan_sebelum as $i => $row): ?>
+                    <h5 class="mini-title">Sebelum Lulus</h6>
+                        <table class="modern-table">
+                            <thead>
                                 <tr>
-                                    <td><?= $i + 1 ?></td>
-                                    <td><?= esc($row['kategori']) ?></td>
-                                    <td><?= $row['total'] ?></td>
+                                    <th>#</th>
+                                    <th>Kategori (bulan)</th>
+                                    <th>Jumlah</th>
                                 </tr>
-                            <?php endforeach ?>
-                        </tbody>
-                    </table>
-                    <div id="chart-sebelum" style="height: 300px;"></div>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($rekap_bulan_sebelum as $i => $row): ?>
+                                    <tr>
+                                        <td><?= $i + 1 ?></td>
+                                        <td><?= esc($row['kategori']) ?></td>
+                                        <td><?= $row['total'] ?></td>
+                                    </tr>
+                                <?php endforeach ?>
+                            </tbody>
+                        </table>
+                        <div id="chart-sebelum" style="height: 300px;"></div>
                 </div>
                 <div class="col-md-6">
                     <h6 class="fw-bold mb-3">Setelah Lulus</h6>
                     <table class="table table-sm table-bordered mb-3">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Kategori (bulan)</th>
@@ -176,7 +431,18 @@
     <?php foreach ($grafik as $judul => [$var, $key]): ?>
         Highcharts.chart('chart-<?= $key ?>', {
             chart: {
-                type: 'pie'
+                type: 'pie',
+                backgroundColor: 'transparent'
+            },
+            plotOptions: {
+                pie: {
+                    borderRadius: 8,
+                    innerSize: '45%',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b><br>{point.percentage:.1f}%'
+                    }
+                }
             },
             title: {
                 text: ''
@@ -191,7 +457,18 @@
 
     Highcharts.chart('chart-sebelum', {
         chart: {
-            type: 'pie'
+            type: 'pie',
+            backgroundColor: 'transparent'
+        },
+        plotOptions: {
+            pie: {
+                borderRadius: 8,
+                innerSize: '45%',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b><br>{point.percentage:.1f}%'
+                }
+            }
         },
         title: {
             text: ''
@@ -205,7 +482,18 @@
 
     Highcharts.chart('chart-setelah', {
         chart: {
-            type: 'pie'
+            type: 'pie',
+            backgroundColor: 'transparent'
+        },
+        plotOptions: {
+            pie: {
+                borderRadius: 8,
+                innerSize: '45%',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b><br>{point.percentage:.1f}%'
+                }
+            }
         },
         title: {
             text: ''

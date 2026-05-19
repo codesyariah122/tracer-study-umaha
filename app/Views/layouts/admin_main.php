@@ -535,6 +535,34 @@
 
             </a>
 
+            <!-- REKAP -->
+<div class="mt-4 mb-2 px-3">
+
+    <small class="text-uppercase text-secondary fw-bold"
+        style="letter-spacing:1px; font-size:11px; color: rgba(255,255,255,.45)!important;">
+
+        Rekap & Statistik
+
+    </small>
+
+</div>
+
+<a href="<?= base_url('laporan/alumni') ?>"
+    class="<?= uri_string() == 'laporan/alumni' ? 'active' : '' ?>">
+
+    <i class="bi bi-graph-up-arrow"></i>
+    Rekap Tracer Alumni
+
+</a>
+
+<a href="<?= base_url('laporan/pengguna') ?>"
+    class="<?= uri_string() == 'laporan/pengguna' ? 'active' : '' ?>">
+
+    <i class="bi bi-pie-chart-fill"></i>
+    Rekap Pengguna Lulusan
+
+</a>
+
             <a href="<?= base_url('admin/pengguna-request') ?>"
                 class="<?= uri_string() == 'admin/pengguna-request' ? 'active' : '' ?>">
 

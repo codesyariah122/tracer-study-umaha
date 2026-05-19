@@ -334,11 +334,8 @@
                     </div>
 
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- CHARTS -->
@@ -382,6 +379,123 @@
 
         </div>
 
+    </div>
+
+
+    <!-- SUMMARY -->
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-4">
+
+            <div class="modern-card p-4 h-100">
+
+                <div class="text-muted mb-2">
+                    Total Responden
+                </div>
+
+                <h2 class="fw-bold text-success mb-0">
+                    <?= esc($summary_pengguna['total_responden']) ?>
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="modern-card p-4 h-100">
+
+                <div class="text-muted mb-2">
+                    Rata-rata Penilaian
+                </div>
+
+                <h2 class="fw-bold text-primary mb-0">
+                    <?= esc($summary_pengguna['rata_rata_global']) ?>/5
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="modern-card p-4 h-100">
+
+                <div class="text-muted mb-2">
+                    Kompetensi Terbaik
+                </div>
+
+                <h5 class="fw-bold text-dark mb-0">
+                    <?= esc($summary_pengguna['indikator_terbaik']) ?>
+                </h5>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PIE CHART -->
+    <div class="row g-4 section-spacing">
+        <div class="mb-5">
+
+            <div class="mb-4 text-center">
+
+                <h3 class="modern-section-title">
+                    Rata-rata Penilaian Pengguna Lulusan
+                </h3>
+
+                <div class="modern-section-subtitle">
+                    Visualisasi rata-rata penilaian tiap kompetensi alumni.
+                </div>
+
+            </div>
+
+            <div class="modern-card p-4">
+
+                <div id="chartPiePengguna" style="height: 500px;"></div>
+
+            </div>
+
+        </div>
+
+        <!-- GRAFIK: DISTRIBUSI SKOR KUESIONER PENGGUNA LULUSAN -->
+        <div class="mb-5">
+
+            <div class="mb-4 text-center">
+
+                <h3 class="modern-section-title">
+                    Distribusi Skor Kuesioner Pengguna Lulusan
+                </h3>
+
+                <div class="modern-section-subtitle">
+                    Komposisi penilaian (skala 1 sampai 5) per dimensi.
+                </div>
+
+            </div>
+
+            <div class="modern-card p-4">
+
+                <div class="row">
+
+                    <div class="col-12">
+
+                        <div id="chartDistribusiSkorPengguna" style="height: 430px;"></div>
+
+                        <?php if (empty($kuesioner_pengguna_distribusi_skor['hasData'])): ?>
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-graph-up-arrow fs-1"></i>
+                                <p class="mt-3 mb-0">Belum ada data kuesioner pengguna untuk ditampilkan.</p>
+                            </div>
+                        <?php endif; ?>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
     <!-- TOP PERUSAHAAN -->
@@ -546,6 +660,107 @@
             Belum ada data alumni per tahun.
         </p>
     </div>
+
+<?php endif; ?>
+
+
+<?php if (!empty($kuesioner_pengguna_pie['hasData'])): ?>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const piePayload = <?= json_encode($kuesioner_pengguna_pie, JSON_UNESCAPED_UNICODE) ?>;
+
+            Highcharts.chart('chartPiePengguna', {
+
+                chart: {
+                    type: 'pie',
+                    backgroundColor: 'transparent'
+                },
+
+                title: {
+                    text: null
+                },
+
+                tooltip: {
+                    pointFormat: '<b>{point.y}</b>'
+                },
+
+                plotOptions: {
+
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        borderRadius: 8,
+
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b><br>{point.y}'
+                        },
+
+                        innerSize: '55%'
+                    }
+                },
+
+                series: [{
+                    name: 'Nilai',
+                    colorByPoint: true,
+                    data: piePayload.series
+                }]
+            });
+
+        });
+    </script>
+
+<?php endif; ?>
+
+<?php if (!empty($kuesioner_pengguna_distribusi_skor['hasData'])): ?>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const payload = <?= json_encode($kuesioner_pengguna_distribusi_skor, JSON_UNESCAPED_UNICODE) ?>;
+
+            Highcharts.chart('chartDistribusiSkorPengguna', {
+
+                chart: {
+                    type: 'column',
+                    backgroundColor: 'transparent'
+                },
+
+                title: {
+                    text: null
+                },
+
+                xAxis: {
+                    categories: payload.categories
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Jumlah Respon'
+                    },
+                    allowDecimals: false
+                },
+
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        borderRadius: 5
+                    }
+                },
+
+                legend: {
+                    title: {
+                        text: 'Skor'
+                    }
+                },
+
+                series: payload.series
+            });
+
+        });
+    </script>
 
 <?php endif; ?>
 

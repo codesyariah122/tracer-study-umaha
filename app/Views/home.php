@@ -431,11 +431,16 @@
 
                 <?php
                 $isLoggedIn = session()->get('email');
+
+                $link  = $item['link'] ?? '#';
+                $icon  = $item['icon'] ?? 'bi bi-grid';
+                $text  = $item['text'] ?? 'Menu';
+                $modal = $item['modal'] ?? false;
                 ?>
 
                 <div class="col-md-6 col-lg-5">
 
-                    <?php if (!empty($item['modal'])): ?>
+                    <?php if ($modal): ?>
 
                         <?php if ($isLoggedIn): ?>
 
@@ -453,19 +458,19 @@
 
                             <?php else: ?>
 
-                                <a href="<?= $item['link'] ?>"
+                                <a href="<?= esc($link) ?>"
                                     class="menu-modern-card">
 
                                 <?php endif; ?>
 
-                                <i class="<?= esc($item['icon']) ?>"></i>
+                                <i class="<?= esc($icon) ?>"></i>
 
                                 <h5>
-                                    <?= esc($item['text']) ?>
+                                    <?= esc($text) ?>
                                 </h5>
 
                                 <p>
-                                    Akses fitur <?= esc($item['text']) ?>
+                                    Akses fitur <?= esc($text) ?>
                                     untuk pengelolaan data tracer study alumni UMAHA.
                                 </p>
 
@@ -474,13 +479,14 @@
                 </div>
 
             <?php endforeach ?>
-
         </div>
 
     </div>
 
+
     <!-- DOWNLOAD -->
     <div class="download-box">
+
 
         <div class="row align-items-center">
 
@@ -567,5 +573,6 @@
         }, 1000);
     }
 </script>
+
 
 <?= $this->endSection() ?>
